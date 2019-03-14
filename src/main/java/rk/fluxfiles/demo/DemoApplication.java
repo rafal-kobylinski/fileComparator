@@ -7,6 +7,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import reactor.core.publisher.Flux;
 
+import java.lang.reflect.Type;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -21,33 +22,28 @@ public class DemoApplication {
     }
 
     @Bean
-    public CommandLineRunner demo() {
+    public CommandLineRunner demo(Comp comparator, TypeConfig config, TypeProxy spec) {
         return (args) -> {
+            final Runtime runtime = Runtime.getRuntime();
 
-            Path path1 = Paths.get("/home/kobik/workz/flux/src/main/resources/file1.txt");
-            Path path2 = Paths.get("/home/kobik/workz/flux/src/main/resources/file2.txt");
+            spec.setType("TYPE_ONE");
+            Path path1 = Paths.get("input/file1.txt.bak");
+            Path path2 = Paths.get("input/file2.txt.bak");
 
-            Flux<String> books = fluxVersion(path1);
-            Flux<String> books2 = fluxVersion(path2);
-            Comp.loadProperties();
+            Flux<String> streamOne = fromPath(path1);
+            Flux<String> streamTwo = fromPath(path2);
 
-            books
-                    .zipWith(books2)
-                    .doOnNext(v -> Comp.compare(v.getT1(), v.getT2()))
-                    .blockLast();
+            streamOne
+                    .zipWith(streamTwo)
+                    .doOnNext(v -> comparator.compare(v.getT1(), v.getT2()))
+                    .subscribe();
+                    //.blockLast();
 
-            //.toStream()
-            //.forEach(System.out::println);
+            log.info("stream one: " + comparator.getStreamOne().entrySet().size());
+            log.info("stream two: " + comparator.getStreamTwo().entrySet().size());
+            log.info("not matched: " + comparator.getNotFullyMatched().size());
 
-            //books.doOnNext(System.out::println)
-            //       .blockLast();
-            log.info(Comp.output());
         };
-    }
-
-
-    private static Flux<String> fluxVersion(Path path) {
-        return fromPath(path);
     }
 
     private static Flux<String> fromPath(Path path) {
