@@ -13,7 +13,7 @@ import java.util.Map;
 @Data
 @Component
 @Slf4j
-public class Comp {
+public class Comparator {
 
     @Autowired
     private TypeProxy spec;

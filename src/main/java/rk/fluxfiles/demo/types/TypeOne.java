@@ -36,7 +36,7 @@ public class TypeOne implements Spec {
 
     public void loadProperties()
     {
-        String appConfigPath = "input/TYPE1.txt";
+        String appConfigPath = "config/TYPE1.txt";
 
         Properties appProps = new Properties();
 

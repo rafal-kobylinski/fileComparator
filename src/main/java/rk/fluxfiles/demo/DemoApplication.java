@@ -7,11 +7,11 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import reactor.core.publisher.Flux;
 
-import java.lang.reflect.Type;
+import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.stream.BaseStream;
+import java.util.stream.Stream;
 
 @Slf4j
 @SpringBootApplication
@@ -20,24 +20,25 @@ public class DemoApplication {
     public static void main(String[] args) {
         SpringApplication.run(DemoApplication.class, args);
     }
+    private String EXTENSION = "txt";
+    private String STREAM_ONE_DIR = "input/in1/";
+    private String STREAM_TWO_DIR = "input/in2/";
+
 
     @Bean
-    public CommandLineRunner demo(Comp comparator, TypeConfig config, TypeProxy spec) {
+    public CommandLineRunner demo(Comparator comparator, TypeConfig config, TypeProxy spec) {
         return (args) -> {
-            final Runtime runtime = Runtime.getRuntime();
 
             spec.setType("TYPE_ONE");
-            Path path1 = Paths.get("input/file1.txt.bak");
-            Path path2 = Paths.get("input/file2.txt.bak");
 
-            Flux<String> streamOne = fromPath(path1);
-            Flux<String> streamTwo = fromPath(path2);
+            Flux<String> streamOne = streamFromFiles(getFiles(STREAM_ONE_DIR));
+            Flux<String> streamTwo = streamFromFiles(getFiles(STREAM_TWO_DIR));
 
-            streamOne
-                    .zipWith(streamTwo)
+            streamOne.zipWith(streamTwo)
+                    .takeWhile(v -> (!v.getT1().equals("") || !v.getT2().equals("")))
                     .doOnNext(v -> comparator.compare(v.getT1(), v.getT2()))
+                    .log()
                     .subscribe();
-                    //.blockLast();
 
             log.info("stream one: " + comparator.getStreamOne().entrySet().size());
             log.info("stream two: " + comparator.getStreamTwo().entrySet().size());
@@ -46,6 +47,7 @@ public class DemoApplication {
         };
     }
 
+
     private static Flux<String> fromPath(Path path) {
         return Flux.using(() -> Files.lines(path),
                 Flux::fromStream,
@@ -53,4 +55,27 @@ public class DemoApplication {
         );
     }
 
+    private File[] getFiles(String dir)
+    {
+        File path = new File(dir);
+        return path.listFiles((dir1, name) -> name.toLowerCase().endsWith(EXTENSION));
+    }
+
+
+    private Flux<String> streamFromFiles(File[] files)
+    {
+        Flux<String> joinedStream = Flux.empty();
+
+        for (File  file : files) {
+            Flux<String> stream = fromPath(file.toPath());
+            joinedStream = joinedStream.concatWith(stream);
+        }
+
+        //TODO fix below workaround
+        Stream<String> infiniteStream = Stream.iterate("", i -> i);
+        Flux<String> dummy = Flux.fromStream(infiniteStream).map(v -> String.valueOf(v));
+        joinedStream = joinedStream.concatWith(dummy);
+
+        return joinedStream;
+    }
 }
