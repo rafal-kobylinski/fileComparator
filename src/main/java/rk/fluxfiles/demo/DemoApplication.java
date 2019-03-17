@@ -20,16 +20,17 @@ public class DemoApplication {
     public static void main(String[] args) {
         SpringApplication.run(DemoApplication.class, args);
     }
-    private String EXTENSION = "txt";
+    private String EXTENSION = "type1";
     private String STREAM_ONE_DIR = "input/in1/";
     private String STREAM_TWO_DIR = "input/in2/";
-
+    private String CONFIG_DIR = "config/";
+    private String TYPE = "TYPE1";
 
     @Bean
-    public CommandLineRunner demo(Comparator comparator, TypeConfig config, TypeProxy spec) {
+    public CommandLineRunner demo(Comparator comparator, TypeConfig config) {
         return (args) -> {
 
-            spec.setType("TYPE_ONE");
+            config.initConfig(TYPE, CONFIG_DIR + TYPE + ".txt");
 
             Flux<String> streamOne = streamFromFiles(getFiles(STREAM_ONE_DIR));
             Flux<String> streamTwo = streamFromFiles(getFiles(STREAM_TWO_DIR));
@@ -37,13 +38,11 @@ public class DemoApplication {
             streamOne.zipWith(streamTwo)
                     .takeWhile(v -> (!v.getT1().equals("") || !v.getT2().equals("")))
                     .doOnNext(v -> comparator.compare(v.getT1(), v.getT2()))
-                    .log()
                     .subscribe();
 
             log.info("stream one: " + comparator.getStreamOne().entrySet().size());
             log.info("stream two: " + comparator.getStreamTwo().entrySet().size());
             log.info("not matched: " + comparator.getNotFullyMatched().size());
-
         };
     }
 

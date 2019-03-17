@@ -1,5 +1,4 @@
-extension=ESP
-delimated=yes
+type=1
 delimeter=,
 key1=0,1,3
 key2=all
