@@ -16,15 +16,4 @@ public class DemoApplicationTests {
     @Test
     public void contextLoads() {
     }
-
-    @Test
-    public void testMultimap() {
-        Multimap<String, String> map = ArrayListMultimap.create();
-        map.put("key1", "value1");
-        map.put("key1", "value1");
-        System.out.println(map.get("key1"));
-        map.remove("key1", "value1");
-        System.out.println(map.get("key1"));
-    }
-
 }

@@ -1,4 +1,0 @@
-type=2
-delimeter=,
-key1=0-5
-key2=0-5,10-17

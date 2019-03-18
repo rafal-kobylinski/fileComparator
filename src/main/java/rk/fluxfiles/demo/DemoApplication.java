@@ -23,6 +23,7 @@ public class DemoApplication {
     private String STREAM_ONE_DIR = "in1/";
     private String STREAM_TWO_DIR = "in2/";
     private String CONFIG_DIR = "config/";
+    private String OUTPUT_DIR = "output/";
 
     @Autowired
     Comparator comparator;
@@ -31,22 +32,26 @@ public class DemoApplication {
         SpringApplication.run(DemoApplication.class, args);
     }
 
-    /*@Bean
+    @Bean
     public CommandLineRunner demo(TypeConfig config) {
-        return (args) ->
-                getTypesFromDir(INPUT_DIR + "/" + STREAM_ONE_DIR)
-                .stream()
-                .filter(this::checkIfConfigExists)
-                .forEach(type -> {
-                    log.info("Processing stream " + type);
-                    config.initConfig(type, CONFIG_DIR + type + ".txt");
-                    execute(type);
-                });
-    }*/
+        return (args) -> {
+            getTypesFromDir(INPUT_DIR + "/" + STREAM_ONE_DIR)
+                    .stream()
+                    .filter(this::checkIfConfigExists)
+                    .forEach(type -> {
+                        log.info("-----------------------------------------------------------");
+                        log.info("Processing stream " + type);
+                        config.initConfig(type, CONFIG_DIR + type + ".txt");
+
+                        execute(type);
+
+                        comparator.cleanUp();
+                    });
+        };
+    }
 
     private void execute(String type)
     {
-
         Flux<String> streamOne = streamFromFiles(getFiles(type, INPUT_DIR + "/" + STREAM_ONE_DIR));
         Flux<String> streamTwo = streamFromFiles(getFiles(type, INPUT_DIR + "/" + STREAM_TWO_DIR));
 
@@ -55,13 +60,19 @@ public class DemoApplication {
                 .doOnNext(v -> comparator.compare(v.getT1(), v.getT2()))
                 .subscribe();
 
+        writeOutput();
+
+    }
+
+    private void writeOutput()
+    {
         log.info("Stream1 had " + comparator.getCounter1() + " records");
         log.info("Stream2 had " + comparator.getCounter2() + " records");
-        log.info("stream one: " + comparator.getStreamOne().entrySet().size());
-        log.info("stream two: " + comparator.getStreamTwo().entrySet().size());
+        log.info("stream one: " + comparator.getStreamOne().size());
+        log.info("stream two: " + comparator.getStreamTwo().size());
         log.info("not matched: " + comparator.getNotFullyMatched().size());
 
-        //comparator.getStreamOne().entrySet().forEach(System.out::println);
+
     }
 
     private Boolean checkIfConfigExists(String type)

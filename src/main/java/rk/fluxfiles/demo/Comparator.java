@@ -1,5 +1,7 @@
 package rk.fluxfiles.demo;
 
+import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.Multimap;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,8 +23,8 @@ public class Comparator {
 
     private int counter1 = 0;
     private int counter2 = 0;
-    private Map<String, String> streamOne = new HashMap<>();
-    private Map<String, String> streamTwo = new HashMap<>();
+    private Multimap<String, String> streamOne = ArrayListMultimap.create();
+    private Multimap<String, String> streamTwo = ArrayListMultimap.create();
     private ArrayList<String[]> notFullyMatched = new ArrayList<>();
 
     public void compare(String one, String two) {
@@ -69,21 +71,21 @@ public class Comparator {
         }
     }
 
-    private void processKey(String record, String key1, Map<String, String> recordstream, Map<String , String> otherStream)
+    private void processKey(String record, String key1, Multimap<String,String> recordstream, Multimap<String,String> otherStream)
     {
         log.debug("processing record " + record);
-
-        String otherRecord;
 
         if (checkKey1VsOtheStream(key1, otherStream))
         {
             log.debug("match on key1 with other stream");
             String streamOneKey2 = spec.getKey2(record);
-            otherRecord = otherStream.get(key1);
-            String otherRecordKey1 = spec.getKey(otherRecord);
-            String otherRecordKey2 = spec.getKey2(otherStream.get(otherRecordKey1));
 
-            otherStream.remove(key1);
+            String otherRecord = otherStream.get(key1).iterator().next();
+            String otherRecordKey1 = spec.getKey(otherRecord);
+            String otherRecordKey2 = spec.getKey2(otherStream.get(otherRecordKey1).iterator().next());
+
+            otherStream.remove(key1, otherRecord);
+
             if (compareKeys(streamOneKey2, otherRecordKey2))
             {
                 log.debug("match on key2");
@@ -98,7 +100,7 @@ public class Comparator {
         }
     }
 
-    private Boolean checkKey1VsOtheStream(String key, Map<String, String> otherStream)
+    private Boolean checkKey1VsOtheStream(String key, Multimap<String,String> otherStream)
     {
         return otherStream.containsKey(key);
     }
@@ -106,5 +108,14 @@ public class Comparator {
     private Boolean compareKeys(String key, String otherKey)
     {
         return key.equals(otherKey);
+    }
+
+    public void cleanUp()
+    {
+        streamOne.clear();
+        streamTwo.clear();
+        counter1 = 0;
+        counter2 = 0;
+        notFullyMatched.clear();
     }
 }
