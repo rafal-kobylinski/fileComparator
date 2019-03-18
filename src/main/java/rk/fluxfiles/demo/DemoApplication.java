@@ -1,6 +1,7 @@
 package rk.fluxfiles.demo;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -10,54 +11,92 @@ import reactor.core.publisher.Flux;
 import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.List;
 import java.util.stream.BaseStream;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Slf4j
 @SpringBootApplication
 public class DemoApplication {
+    private String INPUT_DIR = "D:/projekty/compareTool/fromCM1/fcomp/";
+    private String STREAM_ONE_DIR = "in1/";
+    private String STREAM_TWO_DIR = "in2/";
+    private String CONFIG_DIR = "config/";
+
+    @Autowired
+    Comparator comparator;
 
     public static void main(String[] args) {
         SpringApplication.run(DemoApplication.class, args);
     }
-    private String EXTENSION = "type1";
-    private String STREAM_ONE_DIR = "input/in1/";
-    private String STREAM_TWO_DIR = "input/in2/";
-    private String CONFIG_DIR = "config/";
-    private String TYPE = "TYPE1";
 
-    @Bean
-    public CommandLineRunner demo(Comparator comparator, TypeConfig config) {
-        return (args) -> {
+    /*@Bean
+    public CommandLineRunner demo(TypeConfig config) {
+        return (args) ->
+                getTypesFromDir(INPUT_DIR + "/" + STREAM_ONE_DIR)
+                .stream()
+                .filter(this::checkIfConfigExists)
+                .forEach(type -> {
+                    log.info("Processing stream " + type);
+                    config.initConfig(type, CONFIG_DIR + type + ".txt");
+                    execute(type);
+                });
+    }*/
 
-            config.initConfig(TYPE, CONFIG_DIR + TYPE + ".txt");
+    private void execute(String type)
+    {
 
-            Flux<String> streamOne = streamFromFiles(getFiles(STREAM_ONE_DIR));
-            Flux<String> streamTwo = streamFromFiles(getFiles(STREAM_TWO_DIR));
+        Flux<String> streamOne = streamFromFiles(getFiles(type, INPUT_DIR + "/" + STREAM_ONE_DIR));
+        Flux<String> streamTwo = streamFromFiles(getFiles(type, INPUT_DIR + "/" + STREAM_TWO_DIR));
 
-            streamOne.zipWith(streamTwo)
-                    .takeWhile(v -> (!v.getT1().equals("") || !v.getT2().equals("")))
-                    .doOnNext(v -> comparator.compare(v.getT1(), v.getT2()))
-                    .subscribe();
+        streamOne.zipWith(streamTwo)
+                .takeWhile(v -> (!v.getT1().equals("") || !v.getT2().equals("")))
+                .doOnNext(v -> comparator.compare(v.getT1(), v.getT2()))
+                .subscribe();
 
-            log.info("stream one: " + comparator.getStreamOne().entrySet().size());
-            log.info("stream two: " + comparator.getStreamTwo().entrySet().size());
-            log.info("not matched: " + comparator.getNotFullyMatched().size());
-        };
+        log.info("Stream1 had " + comparator.getCounter1() + " records");
+        log.info("Stream2 had " + comparator.getCounter2() + " records");
+        log.info("stream one: " + comparator.getStreamOne().entrySet().size());
+        log.info("stream two: " + comparator.getStreamTwo().entrySet().size());
+        log.info("not matched: " + comparator.getNotFullyMatched().size());
+
+        //comparator.getStreamOne().entrySet().forEach(System.out::println);
     }
 
+    private Boolean checkIfConfigExists(String type)
+    {
+        File path = new File(CONFIG_DIR + type + ".txt");
+        Boolean exist = path.exists();
+        if (!exist)
+        {
+            log.info("Config file for type: " + type + " does not exists, skipping");
+        }
+        return exist;
+    }
 
-    private static Flux<String> fromPath(Path path) {
+    private Flux<String> fromPath(Path path) {
         return Flux.using(() -> Files.lines(path),
                 Flux::fromStream,
                 BaseStream::close
         );
     }
 
-    private File[] getFiles(String dir)
+    private List<String> getTypesFromDir(String dir)
     {
         File path = new File(dir);
-        return path.listFiles((dir1, name) -> name.toLowerCase().endsWith(EXTENSION));
+        return Stream.of(path.listFiles())
+                .filter(File::isFile)
+                .map(file -> file.getName())
+                .map(name -> name.substring(name.lastIndexOf(".") + 1))
+                .distinct()
+                .collect(Collectors.toList());
+    }
+
+    private File[] getFiles(String type, String dir)
+    {
+        File path = new File(dir);
+        return path.listFiles((dir1, name) -> name.endsWith(type));
     }
 
 

@@ -1,6 +1,7 @@
 package rk.fluxfiles.demo;
 
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -35,8 +36,8 @@ public class TypeConfig {
 
         this.type = properties.getProperty("type");
         log.info("Initializing config for type " + this.type + ", using file " + path);
-        log.info("key1: " + Stream.of(getKeys1()).collect(Collectors.joining()));
-        log.info("key2: " + Stream.of(getKeys2()).collect(Collectors.joining()));
+        log.info("key1: " + Stream.of(getKeys1()).collect(Collectors.joining(",")));
+        log.info("key2: " + Stream.of(getKeys2()).collect(Collectors.joining(",")));
 
         setProxy(this.type);
 

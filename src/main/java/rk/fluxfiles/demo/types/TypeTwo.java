@@ -32,7 +32,6 @@ public class TypeTwo implements Spec {
     {
         keys1 = setKey(typeConfig.getKeys1());
         keys2 = setKey(typeConfig.getKeys2());
-        log.info("Type2 initialized: " + this.toString());
     }
 
     public String getKey(String record)
@@ -50,12 +49,12 @@ public class TypeTwo implements Spec {
     {
         if (keys == null)
         {
-            return record;
+            return record.trim();
         }
 
         return keys
                 .stream()
-                .map(v -> record.substring(v.getValue1(), v.getValue2l()))
+                .map(v -> record.trim().substring(v.getValue1(), v.getValue2()))
                 .collect(Collectors.joining());
     }
 

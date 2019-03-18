@@ -33,8 +33,6 @@ public class TypeOne implements Spec {
         this.delimeter = typeConfig.getDelimeter();
         this.keys1 = typeConfig.getKeys1();
         this.keys2 = typeConfig.getKeys2();
-
-        log.info("Type1 initialized: " + this.toString());
     }
 
 
