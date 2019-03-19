@@ -1,3 +1,0 @@
-type=2
-key1=0-108
-key2=all

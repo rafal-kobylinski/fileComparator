@@ -46,6 +46,11 @@ public class TypeTwo implements Spec {
         return generateRecordKey(keys2, record);
     }
 
+    @Override
+    public String createComparisonReport(String[] records) {
+        return null;
+    }
+
     public List<String[]> getRecordToKey2(String record) {
         List<String[]> output = new ArrayList<>();
 

@@ -6,6 +6,6 @@ public interface Spec {
 
     String getKey(String record);
     String getKey2(String record);
-    List<String[]> getRecordToKey2(String record);
+    String createComparisonReport(String[] records);
     void init();
 }

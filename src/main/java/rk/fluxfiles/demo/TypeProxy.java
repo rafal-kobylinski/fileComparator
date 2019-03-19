@@ -56,8 +56,8 @@ public class TypeProxy implements Spec
     }
 
 
-    public List<String[]> getRecordToKey2(String record) {
-        return spec.getRecordToKey2(record);
+    public String createComparisonReport(String[] records) {
+        return spec.createComparisonReport(records);
     }
 
 

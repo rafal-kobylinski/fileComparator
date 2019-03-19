@@ -41,7 +41,7 @@ public class TypeThree implements Spec {
             return record;
         }
 
-        String[] splitted = record.split(delimeter);
+        String[] splitted = record.split(delimeter, -1);
         StringBuilder output = new StringBuilder();
         for (String index: keys1)
         {
@@ -58,7 +58,7 @@ public class TypeThree implements Spec {
             return record;
         }
 
-        String[] splitted = record.split(delimeter);
+        String[] splitted = record.split(delimeter, -1);
         StringBuilder output = new StringBuilder();
         for (String index: keys2)
         {
@@ -66,6 +66,11 @@ public class TypeThree implements Spec {
         }
 
         return output.toString();
+    }
+
+    @Override
+    public String createComparisonReport(String[] records) {
+        return null;
     }
 
     public List<String[]> getRecordToKey2(String record) {
