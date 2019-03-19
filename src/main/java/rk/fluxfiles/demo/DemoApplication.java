@@ -79,8 +79,8 @@ public class DemoApplication {
                 .collect(Collectors.toList());
 
         try {
-            if (comparator.getStreamOne().size() !=0) Files.write(Paths.get(OUTPUT_DIR + type + ".notMatched1"), comparator.getStreamOne().values());
-            if (comparator.getStreamTwo().size() !=0) Files.write(Paths.get(OUTPUT_DIR + type + ".notMatched2"), comparator.getStreamTwo().values());
+            //if (comparator.getStreamOne().size() !=0) Files.write(Paths.get(OUTPUT_DIR + type + ".notMatched1"), comparator.getStreamOne().values().stream().collect(Collectors.toList()));
+            //if (comparator.getStreamTwo().size() !=0) Files.write(Paths.get(OUTPUT_DIR + type + ".notMatched2"), comparator.getStreamTwo().values());
             if (comparator.getNotFullyMatched().size() !=0) Files.write(Paths.get(OUTPUT_DIR + type + ".notFullyMatched"), contentNotFully);
         } catch (IOException e) {
             e.printStackTrace();
