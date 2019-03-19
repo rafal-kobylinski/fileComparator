@@ -9,10 +9,12 @@ import rk.fluxfiles.demo.types.TypeOne;
 import rk.fluxfiles.demo.types.TypeThree;
 import rk.fluxfiles.demo.types.TypeTwo;
 
+import java.util.List;
+
 @NoArgsConstructor
 @Component
 @Slf4j
-public class TypeProxy
+public class TypeProxy implements Spec
 {
 
     private Spec spec;
@@ -52,6 +54,12 @@ public class TypeProxy
     {
         return spec.getKey2(record);
     }
+
+
+    public List<String[]> getRecordToKey2(String record) {
+        return spec.getRecordToKey2(record);
+    }
+
 
     public void init()
     {

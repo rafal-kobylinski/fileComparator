@@ -8,6 +8,8 @@ import org.springframework.stereotype.Component;
 import rk.fluxfiles.demo.Spec;
 import rk.fluxfiles.demo.TypeConfig;
 
+import java.util.List;
+
 
 @Slf4j
 @NoArgsConstructor
@@ -31,7 +33,7 @@ public class TypeThree implements Spec {
         log.info("Type1 initialized: " + this.toString());
     }
 
-    @Override
+
     public String getKey(String record)
     {
         if (keys1[0].equals("all") )
@@ -66,4 +68,7 @@ public class TypeThree implements Spec {
         return output.toString();
     }
 
+    public List<String[]> getRecordToKey2(String record) {
+        return null;
+    }
 }

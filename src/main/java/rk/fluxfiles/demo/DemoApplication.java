@@ -142,6 +142,31 @@ public class DemoApplication {
 
     private String formatDiff(String[] lines)
     {
-        return lines[0] + "\n" + lines[1] + "\n";
+        StringBuilder output = new StringBuilder();
+        //return lines[0] + "\n" + lines[1] + "\n";
+        List<String[]> from1 = comparator.getSpec().getRecordToKey2(lines[0]);
+        List<String[]> from2 = comparator.getSpec().getRecordToKey2(lines[1]);
+
+        int howManyDiffs = 0;
+        StringBuilder diffs = new StringBuilder();
+
+        for (int i=0; i<from1.size(); i++)
+        {
+            String value1 = from1.get(i)[1];
+            String value2 = from2.get(i)[1];
+            String indeks = from1.get(i)[0];
+            Boolean different = false;
+            if (!value1.equals(value2))
+            {
+                howManyDiffs += 1;
+                diffs.append(indeks + " ");
+                different = true;
+            }
+            output.append(String.format("|%10s|%20s|%20s|%2s\n", indeks, value1, value2, different ? "<<" : ""));
+        }
+        output.insert(0, (lines[0] + "\n"
+                + lines[1] + "\n"
+                + "Differences: " + howManyDiffs + ", on position" + (howManyDiffs==1?": ":"s: ") + diffs.toString() + "\n"));
+        return output.toString();
     }
 }

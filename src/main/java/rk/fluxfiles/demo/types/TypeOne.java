@@ -12,7 +12,10 @@ import rk.fluxfiles.demo.TypeConfig;
 
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
+import java.util.stream.Stream;
 
 
 @Slf4j
@@ -47,7 +50,25 @@ public class TypeOne implements Spec {
     }
 
 
-    public String generateKey(String[] keys, String record)
+    public List<String[]> getRecordToKey2(String record) {
+        List<String[]> output = new ArrayList<>();
+        String[] splittedRecord = record.split(delimeter);
+
+        if (!keys2[0].equals("all")) {
+            for (String key : keys2) {
+                output.add(new String[]{key, splittedRecord[Integer.valueOf(key)]});
+            }
+        } else {
+            for (int i=0; i<splittedRecord.length; i++)
+            {
+                output.add(new String[]{String.valueOf(i), splittedRecord[i]});
+            }
+        }
+
+        return output;
+    }
+
+    private String generateKey(String[] keys, String record)
     {
         if (keys[0].equals("all") )
         {
@@ -63,6 +84,4 @@ public class TypeOne implements Spec {
 
         return output.toString();
     }
-
-
 }

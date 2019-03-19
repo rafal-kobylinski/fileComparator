@@ -10,6 +10,7 @@ import rk.fluxfiles.demo.Spec;
 import rk.fluxfiles.demo.TypeConfig;
 import rk.fluxfiles.demo.utils.Pair;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -45,6 +46,24 @@ public class TypeTwo implements Spec {
         return generateRecordKey(keys2, record);
     }
 
+    public List<String[]> getRecordToKey2(String record) {
+        List<String[]> output = new ArrayList<>();
+
+        if (keys2 != null) {
+            keys2.stream()
+                    .map(key -> output.add(
+                            new String[]{
+                                    key.getValue1() + "-" + key.getValue2(),
+                                    record.substring(key.getValue1(), key.getValue2())}
+                            )
+                    );
+        } else {
+            output.add(new String[]{"0-" + record.length(), record});
+        }
+
+        return output;
+    }
+
     private String generateRecordKey(List<Pair> keys, String record)
     {
         if (keys == null)
@@ -75,5 +94,4 @@ public class TypeTwo implements Spec {
                 )
                 .collect(Collectors.toList());
     }
-
 }
