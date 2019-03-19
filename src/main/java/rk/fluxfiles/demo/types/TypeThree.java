@@ -11,6 +11,7 @@ import rk.fluxfiles.demo.TypeConfig;
 
 @Slf4j
 @NoArgsConstructor
+@Data
 @Component
 public class TypeThree implements Spec {
 

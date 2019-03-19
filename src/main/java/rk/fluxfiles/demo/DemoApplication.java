@@ -9,8 +9,10 @@ import org.springframework.context.annotation.Bean;
 import reactor.core.publisher.Flux;
 
 import java.io.File;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.stream.BaseStream;
 import java.util.stream.Collectors;
@@ -28,12 +30,14 @@ public class DemoApplication {
     @Autowired
     Comparator comparator;
 
-    public static void main(String[] args) {
+    public static void main(String[] args)
+    {
         SpringApplication.run(DemoApplication.class, args);
     }
 
     @Bean
-    public CommandLineRunner demo(TypeConfig config) {
+    public CommandLineRunner demo(TypeConfig config)
+    {
         return (args) -> {
             getTypesFromDir(INPUT_DIR + "/" + STREAM_ONE_DIR)
                     .stream()
@@ -44,7 +48,7 @@ public class DemoApplication {
                         config.initConfig(type, CONFIG_DIR + type + ".txt");
 
                         execute(type);
-
+                        writeOutput(type);
                         comparator.cleanUp();
                     });
         };
@@ -59,20 +63,28 @@ public class DemoApplication {
                 .takeWhile(v -> (!v.getT1().equals("") || !v.getT2().equals("")))
                 .doOnNext(v -> comparator.compare(v.getT1(), v.getT2()))
                 .subscribe();
-
-        writeOutput();
-
     }
 
-    private void writeOutput()
+    private void writeOutput(String type)
     {
         log.info("Stream1 had " + comparator.getCounter1() + " records");
         log.info("Stream2 had " + comparator.getCounter2() + " records");
-        log.info("stream one: " + comparator.getStreamOne().size());
-        log.info("stream two: " + comparator.getStreamTwo().size());
-        log.info("not matched: " + comparator.getNotFullyMatched().size());
+        log.info("not matched from stream1: " + comparator.getStreamOne().size());
+        log.info("not matched from stream2: " + comparator.getStreamTwo().size());
+        log.info("not fully matched: " + comparator.getNotFullyMatched().size());
 
+        List<String> contentNotFully = comparator.getNotFullyMatched()
+                .stream()
+                .map(this::formatDiff)
+                .collect(Collectors.toList());
 
+        try {
+            if (comparator.getStreamOne().size() !=0) Files.write(Paths.get(OUTPUT_DIR + type + ".notMatched1"), comparator.getStreamOne().values());
+            if (comparator.getStreamTwo().size() !=0) Files.write(Paths.get(OUTPUT_DIR + type + ".notMatched2"), comparator.getStreamTwo().values());
+            if (comparator.getNotFullyMatched().size() !=0) Files.write(Paths.get(OUTPUT_DIR + type + ".notFullyMatched"), contentNotFully);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     private Boolean checkIfConfigExists(String type)
@@ -126,5 +138,10 @@ public class DemoApplication {
         joinedStream = joinedStream.concatWith(dummy);
 
         return joinedStream;
+    }
+
+    private String formatDiff(String[] lines)
+    {
+        return lines[0] + "\n" + lines[1] + "\n";
     }
 }

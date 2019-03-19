@@ -18,7 +18,7 @@ import java.util.Properties;
 @Slf4j
 @NoArgsConstructor
 @Component
-@ToString
+@Data
 public class TypeOne implements Spec {
 
     private String delimeter;

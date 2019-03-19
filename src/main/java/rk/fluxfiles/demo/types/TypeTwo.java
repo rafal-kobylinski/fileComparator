@@ -19,7 +19,7 @@ import java.util.stream.Stream;
 @ToString
 @NoArgsConstructor
 @Component
-@Slf4j
+@Data
 public class TypeTwo implements Spec {
 
     private List<Pair> keys1;
