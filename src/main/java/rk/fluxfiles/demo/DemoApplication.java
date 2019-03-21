@@ -1,6 +1,7 @@
 package rk.fluxfiles.demo;
 
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.io.FileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -39,6 +40,12 @@ public class DemoApplication {
     public CommandLineRunner demo(TypeConfig config)
     {
         return (args) -> {
+            try {
+                FileUtils.cleanDirectory(new File(OUTPUT_DIR));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
             getTypesFromDir(INPUT_DIR + "/" + STREAM_ONE_DIR)
                     .stream()
                     .filter(this::checkIfConfigExists)
@@ -150,6 +157,6 @@ public class DemoApplication {
 
     private String formatDiff(String[] lines)
     {
-        return comparator.getSpec().createComparisonReport(lines);
+        return comparator.getSpec().createComparisonReport(lines[0], lines[1]);
     }
 }

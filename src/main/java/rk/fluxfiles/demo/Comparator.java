@@ -52,7 +52,7 @@ public class Comparator {
                     log.debug("records equal on key2");
                     return;
                 } else {
-                    log.debug("records different on key2");
+                    log.debug("records different on key2\n" + streamOneKey + "\n" + streamTwoKey);
                     notFullyMatched.add(new String[]{one, two});
                     return;
                 }
@@ -78,7 +78,7 @@ public class Comparator {
             log.debug("match on key1 with other stream");
             String streamOneKey2 = spec.getKey2(record);
 
-            String otherRecord = otherStream.get(key1).iterator().next();
+            String otherRecord = otherStream.get(key1).get(0);
             String otherRecordKey1 = spec.getKey(otherRecord);
             String otherRecordKey2 = spec.getKey2(otherStream.get(otherRecordKey1).get(0));
 
@@ -88,7 +88,7 @@ public class Comparator {
             {
                 log.debug("match on key2");
             } else {
-                log.debug("not matching on key2");
+                log.debug("not matching on key2\n" + streamOneKey2 + "\n" + otherRecordKey2);
                 notFullyMatched.add(new String[]{record, otherRecord});
             }
         }
