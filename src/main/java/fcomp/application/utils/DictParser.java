@@ -1,4 +1,4 @@
-package rk.fluxfiles.demo.utils;
+package fcomp.application.utils;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -35,9 +35,11 @@ public class DictParser {
     {
         File path = new File(file);
 
+        log.debug(path.getAbsolutePath());
         try {
             return Files.lines(path.toPath()).collect(Collectors.joining(" "));
         } catch (IOException e) {
+            log.error("dictionary file " + file + " not found");
             e.printStackTrace();
         }
 
@@ -133,10 +135,13 @@ public class DictParser {
 
             Map<String, String> map = new LinkedHashMap<>();
 
+            int start = 0;
             for (int i=0; i<keysList.size(); i++)
             {
-                map.put(keysList.get(i), namesList.get(i));
+                map.put(start + "-" + (start - 1 + Integer.valueOf(keysList.get(i))),namesList.get(i));
+                start += Integer.valueOf(keysList.get(i));
             }
+
             output.put(type, map);
         }
 

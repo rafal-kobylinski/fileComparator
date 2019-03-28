@@ -1,18 +1,13 @@
-package rk.fluxfiles.demo.types;
+package fcomp.application.types;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import reactor.core.publisher.Flux;
-import reactor.util.function.Tuple2;
-import rk.fluxfiles.demo.Dict;
-import rk.fluxfiles.demo.Spec;
-import rk.fluxfiles.demo.TypeConfig;
+import fcomp.application.utils.Dict;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 
 @Slf4j
@@ -67,16 +62,20 @@ public class TypeOne implements Spec {
 
 
 
-    public String getField(String index, String record)
+    public String getFieldValue(String index, String record)
     {
         return record.split(delimeter, -1)[Integer.valueOf(index)];
     }
 
-    public Map<String, String> getFieldsMapping(String record1) {
-        return dict.getDictionary().get("00");
+    public Map<String, String> getRecordDictionary(String record1) {
+        if (dict.getDictionary() == null) {
+            return null;
+        } else {
+            return dict.getDictionary().get("00");
+        }
     }
 
-    public Boolean checkIfInKeys(String index)
+    public Boolean checkIfInKeys(String index, String record)
     {
         if (keys2.get(0).equals("all") || keys2.contains(index)) return true;
         return false;

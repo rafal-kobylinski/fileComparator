@@ -1,9 +1,12 @@
-package rk.fluxfiles.demo;
+package fcomp.application;
 
+import fcomp.application.types.TypeProxy;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import fcomp.application.errors.BuffersOverflow;
+import fcomp.application.utils.Cfg;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -13,11 +16,12 @@ import java.util.Map;
 @Data
 @Component
 @Slf4j
-public class Comparator {
-    //TODO refactor
+public class CompareEngine {
 
     @Autowired
     private TypeProxy spec;
+    @Autowired
+    private Cfg cfg;
 
     private int counter1 = 0;
     private int counter2 = 0;
@@ -25,57 +29,63 @@ public class Comparator {
     private Map<String, List<String>> streamTwo = new HashMap<>();
     private ArrayList<String[]> notFullyMatched = new ArrayList<>();
 
-    public void compare(String one, String two) {
-        log.debug("comparing:\n" + one + "\n" + two);
-        String streamOneKey = null;
-        String streamTwoKey = null;
+    public void compare(String record1, String record2) {
+        log.trace("comparing:\n" + record1 + "\n" + record2);
 
-        if (!one.equals(""))
+        if (streamOne.size() + streamTwo.size() > cfg.getMaxBuffersSize())
+        {
+            throw new BuffersOverflow("Not compared threshold reached. Buffer1: " + streamOne.size() + ", buffer2: " + streamTwo.size() + ". Fix your data");
+        }
+
+        String key1 = null;
+        String key2 = null;
+
+        if (!record1.equals(""))
         {
             counter1 += 1;
-            streamOneKey = spec.getKey(one);
+            key1 = spec.getKey(record1);
         }
-        if (!two.equals("")) {
+        if (!record2.equals("")) {
             counter2 += 1;
-            streamTwoKey = spec.getKey(two);
+            key2 = spec.getKey(record2);
         }
 
-        if (!one.equals("") && !two.equals(""))
+        if (!record1.equals("") && !record2.equals(""))
         {
-            if (compareKeys(streamOneKey, streamTwoKey))
+            if (compareKeys(key1, key2))
             {
-                log.debug("records equal on key1");
-                String streamOneKey2 = spec.getKey2(one);
-                String streamTwoKey2 = spec.getKey2(two);
+                log.trace("records equal on key1");
+                String streamOneKey2 = spec.getKey2(record1);
+                String streamTwoKey2 = spec.getKey2(record2);
                 if (compareKeys(streamOneKey2, streamTwoKey2))
                 {
-                    log.debug("records equal on key2");
+                    log.trace("records equal on key2");
                     return;
                 } else {
-                    log.debug("records different on key2\n" + streamOneKey + "\n" + streamTwoKey);
-                    notFullyMatched.add(new String[]{one, two});
+                    log.trace("records different on key2\n" + key1 + "\n" + key2);
+                    notFullyMatched.add(new String[]{record1, record2});
                     return;
                 }
             } else {
-                log.debug("records different, comparing individually");
+                log.trace("records different, comparing individually");
             }
         }
 
-        if (!one.equals("")) {
-            processKey(one, streamOneKey, streamOne, streamTwo);
+        if (!record1.equals("")) {
+            compareWithOtherStream(record1, key1, streamOne, streamTwo);
         }
-        if (!two.equals("")) {
-            processKey(two, streamTwoKey, streamTwo, streamOne);
+        if (!record2.equals("")) {
+            compareWithOtherStream(record2, key2, streamTwo, streamOne);
         }
     }
 
-    private void processKey(String record, String key1, Map<String,List<String>> recordstream, Map<String,List<String>> otherStream)
+    private void compareWithOtherStream(String record, String key1, Map<String,List<String>> recordstream, Map<String,List<String>> otherStream)
     {
-        log.debug("processing record " + record);
+        log.trace("processing record " + record);
 
         if (checkKey1VsOtheStream(key1, otherStream))
         {
-            log.debug("match on key1 with other stream");
+            log.trace("match on key1 with other stream");
             String streamOneKey2 = spec.getKey2(record);
 
             String otherRecord = otherStream.get(key1).get(0);
@@ -86,14 +96,14 @@ public class Comparator {
 
             if (compareKeys(streamOneKey2, otherRecordKey2))
             {
-                log.debug("match on key2");
+                log.trace("match on key2");
             } else {
-                log.debug("not matching on key2\n" + streamOneKey2 + "\n" + otherRecordKey2);
+                log.trace("not matching on key2\n" + streamOneKey2 + "\n" + otherRecordKey2);
                 notFullyMatched.add(new String[]{record, otherRecord});
             }
         }
         else {
-            log.debug("no match on key1 with other stream");
+            log.trace("no match on key1 with other stream");
             addValue(key1, record, recordstream);
 
         }

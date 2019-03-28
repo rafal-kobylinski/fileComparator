@@ -1,4 +1,4 @@
-package rk.fluxfiles.demo;
+package fcomp.application.types;
 
 import java.util.List;
 import java.util.Map;
@@ -10,7 +10,7 @@ public interface Spec {
     //String createComparisonReport(String record1, String record2);
     void init();
 
-    Boolean checkIfInKeys(String index);
-    String getField(String index, String record);
-    Map<String, String> getFieldsMapping(String record1);
+    Boolean checkIfInKeys(String index, String record);
+    String getFieldValue(String index, String record);
+    Map<String, String> getRecordDictionary(String record1);
 }

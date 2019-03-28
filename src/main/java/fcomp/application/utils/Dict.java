@@ -1,9 +1,8 @@
-package rk.fluxfiles.demo;
+package fcomp.application.utils;
 
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
-import rk.fluxfiles.demo.utils.DictParser;
 
 import java.util.Map;
 
@@ -14,9 +13,15 @@ public class Dict
 {
     private Map<String, Map<String, String>> dictionary;
 
-    public void init(String path) {
-        log.info("initializing dictionary...");
+    public void init(String path)
+    {
+        log.debug("initializing dictionary...");
         dictionary = DictParser.parse(path);
-        log.info("dict: " + dictionary.entrySet());
+        log.debug("dict: " + dictionary.entrySet());
+    }
+
+    public void missingDict()
+    {
+        dictionary = null;
     }
 }

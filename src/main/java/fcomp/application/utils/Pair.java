@@ -1,4 +1,4 @@
-package rk.fluxfiles.demo.utils;
+package fcomp.application.utils;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

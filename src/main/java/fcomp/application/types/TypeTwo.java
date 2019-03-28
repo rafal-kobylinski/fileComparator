@@ -1,15 +1,12 @@
-package rk.fluxfiles.demo.types;
+package fcomp.application.types;
 
+import fcomp.application.utils.Dict;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import rk.fluxfiles.demo.Dict;
-import rk.fluxfiles.demo.Spec;
-import rk.fluxfiles.demo.TypeConfig;
-import rk.fluxfiles.demo.utils.Pair;
+import fcomp.application.utils.Pair;
 
 import java.util.Arrays;
 import java.util.List;
@@ -39,7 +36,7 @@ public class TypeTwo implements Spec {
     }
 
 
-    public Boolean checkIfInKeys(String index)
+    public Boolean checkIfInKeys(String index, String record)
     {
         if (keys2 == null) return true;
 
@@ -53,13 +50,13 @@ public class TypeTwo implements Spec {
         return false;
     }
 
-    public String getField(String index, String record)
+    public String getFieldValue(String index, String record)
     {
         String[] splitted = index.split("-");
         return record.substring(Integer.valueOf(splitted[0]), Integer.valueOf(splitted[1]) + 1);
     }
 
-    public Map<String, String> getFieldsMapping(String record1) {
+    public Map<String, String> getRecordDictionary(String record1) {
         return dict.getDictionary().get("00");
     }
 
