@@ -1,6 +1,6 @@
 package fcomp.application.types;
 
-import fcomp.application.utils.Dict;
+import fcomp.application.configuration.dictionary.Dict;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -25,7 +25,7 @@ public class TypeThree implements Spec {
     private Map<String, List<Pair>> keys2;
 
     @Autowired
-    private TypeConfig typeConfig;
+    private TypeProperties typeProperties;
     @Autowired
     private Dict dict;
 
@@ -33,15 +33,15 @@ public class TypeThree implements Spec {
 
     public void init()
     {
-        this.delimeter = typeConfig.getDelimeter();
+        this.delimeter = typeProperties.getDelimeter();
 
-        String key1Props = typeConfig.getKeys1();
+        String key1Props = typeProperties.getKeys1();
         this.keys1 = parseKeyProps(key1Props);
 
-        String key2Props = typeConfig.getKeys2();
+        String key2Props = typeProperties.getKeys2();
         this.keys2 = parseKeyProps(key2Props);
 
-        String[] subtype = typeConfig.getSubtypePosition().split("-");
+        String[] subtype = typeProperties.getSubtypePosition().split("-");
         this.subtype_position = new Pair(Integer.valueOf(subtype[0]), Integer.valueOf(subtype[1]));
     }
 

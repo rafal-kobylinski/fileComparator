@@ -5,8 +5,8 @@ import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import fcomp.application.utils.Cfg;
-import fcomp.application.utils.Dict;
+import fcomp.application.configuration.Cfg;
+import fcomp.application.configuration.dictionary.Dict;
 import fcomp.application.errors.PropertyNotFoundException;
 
 import java.io.FileInputStream;
@@ -17,7 +17,7 @@ import java.util.*;
 @Component
 @Slf4j
 @Data
-public class TypeConfig {
+public class TypeProperties {
 
     private Properties properties = new Properties();
 

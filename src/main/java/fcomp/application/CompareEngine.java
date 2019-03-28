@@ -1,12 +1,12 @@
 package fcomp.application;
 
+import fcomp.application.configuration.Cfg;
 import fcomp.application.types.TypeProxy;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import fcomp.application.errors.BuffersOverflow;
-import fcomp.application.utils.Cfg;
 
 import java.util.ArrayList;
 import java.util.HashMap;

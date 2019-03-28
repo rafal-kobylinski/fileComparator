@@ -1,12 +1,12 @@
 package fcomp.application;
 
-import fcomp.application.types.TypeConfig;
+import fcomp.application.configuration.Cfg;
+import fcomp.application.types.TypeProperties;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Flux;
-import fcomp.application.utils.Cfg;
 
 import java.io.File;
 import java.io.IOException;
@@ -27,7 +27,7 @@ public class Comparator {
     @Autowired
     private CompareEngine compareEngine;
     @Autowired
-    private TypeConfig config;
+    private TypeProperties config;
     @Autowired
     private Cfg cfg;
 

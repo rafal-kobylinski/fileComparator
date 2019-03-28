@@ -5,7 +5,7 @@ import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import fcomp.application.utils.Dict;
+import fcomp.application.configuration.dictionary.Dict;
 
 import java.util.*;
 
@@ -22,15 +22,15 @@ public class TypeOne implements Spec {
 
 
     @Autowired
-    private TypeConfig typeConfig;
+    private TypeProperties typeProperties;
     @Autowired
     private Dict dict;
 
     public void init()
     {
-        this.delimeter = typeConfig.getDelimeter();
-        this.keys1 = Arrays.asList(typeConfig.getKeys1().split(","));
-        this.keys2 = Arrays.asList(typeConfig.getKeys2().split(","));
+        this.delimeter = typeProperties.getDelimeter();
+        this.keys1 = Arrays.asList(typeProperties.getKeys1().split(","));
+        this.keys2 = Arrays.asList(typeProperties.getKeys2().split(","));
     }
 
 

@@ -1,4 +1,4 @@
-package fcomp.application.utils;
+package fcomp.application.configuration.dictionary;
 
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;

@@ -1,6 +1,6 @@
 package fcomp.application.types;
 
-import fcomp.application.utils.Dict;
+import fcomp.application.configuration.dictionary.Dict;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -25,14 +25,14 @@ public class TypeTwo implements Spec {
     private List<Pair> keys2;
 
     @Autowired
-    private TypeConfig typeConfig;
+    private TypeProperties typeProperties;
     @Autowired
     private Dict dict;
 
     public void init()
     {
-        keys1 = setKey(Arrays.asList(typeConfig.getKeys1().split(",")));
-        keys2 = setKey(Arrays.asList(typeConfig.getKeys2().split(",")));
+        keys1 = setKey(Arrays.asList(typeProperties.getKeys1().split(",")));
+        keys2 = setKey(Arrays.asList(typeProperties.getKeys2().split(",")));
     }
 
 
