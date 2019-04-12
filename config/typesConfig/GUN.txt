@@ -1,0 +1,5 @@
+type=3
+type_position=0-1
+dictionary=null
+key1=70;[0-164],80:[0-142]
+key2=70:[0-284],80:[0-284]

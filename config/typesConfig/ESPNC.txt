@@ -1,0 +1,5 @@
+type=1
+delimeter=,
+dictionary=esp.dat
+key1=0,1,2,3,4,9,14
+key2=all

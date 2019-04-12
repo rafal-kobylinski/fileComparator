@@ -37,6 +37,5 @@ public class Cfg {
         in2Dir = properties.getProperty("in2_dir");
         in_report_examples = Integer.valueOf(properties.getProperty("in_report_examples"));
         maxBuffersSize = Long.valueOf(properties.getProperty("max_in_buffers"));
-
     }
 }

@@ -1,0 +1,4 @@
+type=2
+key1=all
+key2=all
+dictionary=fms.dat

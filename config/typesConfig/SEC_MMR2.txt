@@ -1,0 +1,5 @@
+type=1
+delimeter=,
+dictionary=null
+key1=1,2,4,5
+key2=all

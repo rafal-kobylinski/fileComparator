@@ -1,7 +1,5 @@
 package fcomp.application.types;
 
-import lombok.Data;
-import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -9,24 +7,27 @@ import fcomp.application.configuration.Cfg;
 import fcomp.application.configuration.dictionary.Dict;
 import fcomp.application.errors.PropertyNotFoundException;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.*;
 
-@NoArgsConstructor
 @Component
 @Slf4j
-@Data
 public class TypeProperties {
 
     private Properties properties = new Properties();
 
-    @Autowired
     private TypeProxy typeProxy;
-    @Autowired
     private Dict dict;
-    @Autowired
     private Cfg cfg;
+
+    @Autowired
+    public TypeProperties(TypeProxy typeProxy, Dict dict, Cfg cfg) {
+        this.typeProxy = typeProxy;
+        this.dict = dict;
+        this.cfg = cfg;
+    }
 
     public void initConfig(String directory, String file)
     {
@@ -54,9 +55,9 @@ public class TypeProperties {
         setProxy(type);
     }
 
-    public String getDelimeter()
+    public String getDelimiter()
     {
-        return  properties.getProperty("delimeter");
+        return  properties.getProperty("delimiter");
     }
 
     public String getKeys1 ()
@@ -76,5 +77,16 @@ public class TypeProperties {
 
     public String getSubtypePosition() {
         return properties.getProperty("type_position");
+    }
+
+    public Boolean checkIfConfigExists(String type)
+    {
+        File path = new File(cfg.getTypesConfigDir() + type + ".txt");
+        Boolean exist = path.exists();
+        if (!exist)
+        {
+            log.info("Config file for type: " + type + " does not exists, skipping");
+        }
+        return exist;
     }
 }

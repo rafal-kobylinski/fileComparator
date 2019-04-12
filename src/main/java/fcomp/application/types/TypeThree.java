@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
 @Component
 public class TypeThree implements Spec {
 
-    private String delimeter;
+    private String delimiter;
     private Map<String, List<Pair>> keys1;
     private Map<String, List<Pair>> keys2;
 
@@ -33,7 +33,7 @@ public class TypeThree implements Spec {
 
     public void init()
     {
-        this.delimeter = typeProperties.getDelimeter();
+        this.delimiter = typeProperties.getDelimiter();
 
         String key1Props = typeProperties.getKeys1();
         this.keys1 = parseKeyProps(key1Props);
@@ -70,9 +70,11 @@ public class TypeThree implements Spec {
 
     public String getKey(String record)
     {
-        if (keys1 == null) return record;
-
-        return generateRecordKey(keys1.get(getSubType(record)), record);
+        if (keys1 == null) {
+            return record;
+        } else {
+            return generateRecordKey(keys1.get(getSubType(record)), record);
+        }
     }
 
     public String getKey2(String record)
@@ -86,8 +88,7 @@ public class TypeThree implements Spec {
 
     private String getSubType(String record)
     {
-        String subtype = record.substring(subtype_position.getValue1(), subtype_position.getValue2() + 1);
-        return subtype;
+        return record.substring(subtype_position.getValue1(), subtype_position.getValue2() + 1);
     }
 
     private Map<String, List<Pair>> parseKeyProps(String key)
@@ -109,7 +110,8 @@ public class TypeThree implements Spec {
                 continue;
             }
 
-            List<Pair> keys = Arrays.asList(keysString.split(","))
+            List<Pair> keys = Arrays
+                    .asList(keysString.split(","))
                     .stream()
                     .map(v -> v.split("-"))
                     .map(k -> new Pair(
@@ -126,7 +128,6 @@ public class TypeThree implements Spec {
     {
         if (keys == null) return record;
 
-        log.debug("DEBUG" + record + "DEBUG");
         return keys
                 .stream()
                 .map(v -> record.substring(v.getValue1(), v.getValue2() + 1))

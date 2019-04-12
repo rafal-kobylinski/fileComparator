@@ -42,7 +42,6 @@ public class DictParser {
             log.error("dictionary file " + file + " not found");
             e.printStackTrace();
         }
-
         return null;
     }
 

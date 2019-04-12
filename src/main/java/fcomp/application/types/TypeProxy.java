@@ -1,6 +1,5 @@
 package fcomp.application.types;
 
-import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -12,16 +11,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-@NoArgsConstructor
 @Component
 @Slf4j
-public class TypeProxy
+public class TypeProxy implements Spec
 {
 
     private Spec spec;
-    int howManyDiffs;
-    StringBuilder diffs;
-
     @Autowired
     private TypeOne typeOne;
     @Autowired
@@ -58,58 +53,24 @@ public class TypeProxy
         return spec.getKey2(record);
     }
 
-    public String createComparisonReport(String record1, String record2)
+    public void init()
     {
-        howManyDiffs = 0;
-        diffs = new StringBuilder();
-
-        Map<String, String> dict = spec.getRecordDictionary(record1);
-
-        if (dict == null) return record1 + "\n" + record2 + "\n";
-
-        Flux<List<String>> record1ReportFlux = Flux.fromIterable(dict.keySet())
-                .map(i -> recordToReportInput(i, dict.get(i), record1));
-
-        Flux<List<String>> record2ReportFlux = Flux.fromIterable(dict.keySet())
-                .map(i -> recordToReportInput(i, dict.get(i), record2));
-
-        String report = record1ReportFlux.zipWith(record2ReportFlux)
-                .map(this::tupleToReportLine)
-                .collect(Collectors.joining()).block();
-
-        return record1 + "\n"
-                + record2 + "\n"
-                + "Differences: " + howManyDiffs + ", on position" + (howManyDiffs > 1 ? "s " : " ") + diffs + "\n"
-                + report;
     }
 
-    private String tupleToReportLine(Tuple2<List<String>, List<String>> tuple)
+    public Boolean checkIfInKeys(String index, String record)
     {
-        String name = tuple.getT1().get(0);
-        String index = tuple.getT1().get(1);
-        String value1 = tuple.getT1().get(2);
-        String value2 = tuple.getT2().get(2);
-        String info = tuple.getT1().get(3);
-        if (info.equals("") && !value1.equals(value2))
-        {
-            howManyDiffs += 1;
-            diffs.append(index + " ");
-            info = "<<<---";
-        }
+        return spec.checkIfInKeys(index, record);
+    }
 
-        return String.format("|%50s|%10s|%20s|%20s|%2s\n", name, index, value1, value2, info);
+    public String getFieldValue(String index, String record)
+    {
+        return spec.getFieldValue(index, record);
+    }
+
+    public Map<String, String> getRecordDictionary(String record)
+    {
+        return spec.getRecordDictionary(record);
     }
 
 
-    private List<String> recordToReportInput(String index, String name, String record)
-    {
-        Boolean isKeyed = spec.checkIfInKeys(index, record);
-
-        List<String> output = new ArrayList<>();
-        output.add(name);
-        output.add(index);
-        output.add(spec.getFieldValue(index, record));
-        output.add(isKeyed ? "" : "not a key");
-        return output;
-    }
 }

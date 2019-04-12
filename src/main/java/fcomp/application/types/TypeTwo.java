@@ -23,18 +23,20 @@ public class TypeTwo implements Spec {
 
     private List<Pair> keys1;
     private List<Pair> keys2;
+    private TypeProperties typeProperties;
+    private Dict dict;
 
     @Autowired
-    private TypeProperties typeProperties;
-    @Autowired
-    private Dict dict;
+    public TypeTwo(TypeProperties typeProperties, Dict dict) {
+        this.typeProperties = typeProperties;
+        this.dict = dict;
+    }
 
     public void init()
     {
         keys1 = setKey(Arrays.asList(typeProperties.getKeys1().split(",")));
         keys2 = setKey(Arrays.asList(typeProperties.getKeys2().split(",")));
     }
-
 
     public Boolean checkIfInKeys(String index, String record)
     {

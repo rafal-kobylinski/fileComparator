@@ -1,38 +1,34 @@
 package fcomp.application.types;
 
-import lombok.Data;
-import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import fcomp.application.configuration.dictionary.Dict;
-
 import java.util.*;
-
+import java.util.stream.Collectors;
 
 @Slf4j
-@NoArgsConstructor
 @Component
-@Data
 public class TypeOne implements Spec {
 
-    private String delimeter;
+    private String delimiter;
     private List<String> keys1;
     private List<String> keys2;
-
-
-    @Autowired
     private TypeProperties typeProperties;
-    @Autowired
     private Dict dict;
+
+    @Autowired
+    public TypeOne(TypeProperties typeProperties, Dict dict) {
+        this.typeProperties = typeProperties;
+        this.dict = dict;
+    }
 
     public void init()
     {
-        this.delimeter = typeProperties.getDelimeter();
+        this.delimiter = typeProperties.getDelimiter();
         this.keys1 = Arrays.asList(typeProperties.getKeys1().split(","));
         this.keys2 = Arrays.asList(typeProperties.getKeys2().split(","));
     }
-
 
     public String getKey(String record)
     {
@@ -50,21 +46,16 @@ public class TypeOne implements Spec {
         {
             return record;
         }
-        String[] splitted = record.split(delimeter, -1);
-        StringBuilder output = new StringBuilder();
-        for (String key: keys)
-        {
-            output.append(splitted[Integer.valueOf(key)]);
-        }
 
-        return output.toString();
+        String[] splitted = record.split(delimiter, -1);
+        return keys.stream()
+                .map(key -> splitted[Integer.valueOf(key)])
+                .collect(Collectors.joining());
     }
-
-
 
     public String getFieldValue(String index, String record)
     {
-        return record.split(delimeter, -1)[Integer.valueOf(index)];
+        return record.split(delimiter, -1)[Integer.valueOf(index)];
     }
 
     public Map<String, String> getRecordDictionary(String record1) {
@@ -77,7 +68,6 @@ public class TypeOne implements Spec {
 
     public Boolean checkIfInKeys(String index, String record)
     {
-        if (keys2.get(0).equals("all") || keys2.contains(index)) return true;
-        return false;
+        return keys2.get(0).equals("all") || keys2.contains(index);
     }
 }
